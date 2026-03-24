@@ -19,7 +19,7 @@ serve(async (req) => {
       });
     }
 
-    const apiKey = Deno.env.get("AROLINKS_API_KEY");
+    const apiKey = "a4f21819f919b4780df44ad489ab754806ffdaa0";
     if (!apiKey) {
       return new Response(JSON.stringify({ error: "API key not configured" }), {
         status: 500,
