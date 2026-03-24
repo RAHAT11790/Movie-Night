@@ -191,9 +191,9 @@ const LoginPage = ({ onLogin }: LoginPageProps) => {
         initial={{ y: 30, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.2 }}
       >
         <div className="text-center mb-8">
-          <img src={logoImg} alt="RS ANIME" className="w-16 h-16 mx-auto mb-4 rounded-2xl shadow-[0_10px_40px_hsla(170,75%,45%,0.3)]" />
-          <h1 className="text-3xl font-extrabold text-primary text-glow">RS ANIME</h1>
-          <p className="text-xs text-muted-foreground mt-1">Unlimited Anime Series & Movies</p>
+          <img src={logoImg} alt="Movie Night" className="w-16 h-16 mx-auto mb-4 rounded-2xl shadow-[0_10px_40px_hsla(170,75%,45%,0.3)]" />
+          <h1 className="text-3xl font-extrabold text-primary text-glow">Movie Night</h1>
+          <p className="text-xs text-muted-foreground mt-1">Unlimited Series & Movies</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-3">
