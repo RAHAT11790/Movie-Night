@@ -28,8 +28,8 @@ const showBrowserNotification = (title: string, body: string, contentId?: string
   try {
     const options = {
       body,
-      icon: "https://i.ibb.co.com/gLc93Bc3/android-chrome-512x512.png",
-      badge: "https://i.ibb.co.com/gLc93Bc3/android-chrome-512x512.png",
+      icon: "https://i.ibb.co.com/MxDFRJVt/IMG-20260324-224042-439.jpg",
+      badge: "https://i.ibb.co.com/MxDFRJVt/IMG-20260324-224042-439.jpg",
       image: image || undefined,
       tag: contentId ? `rsanime-${contentId}` : `rsanime-${Date.now()}`,
       data: { url: contentId ? `/?anime=${contentId}` : "/" },
