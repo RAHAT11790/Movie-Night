@@ -6,6 +6,7 @@ import { toast } from "sonner";
 const firebaseConfig = {
   apiKey: "AIzaSyC0KtwNcRcGYplQloSUh1nVCJKdEqJ5dj8",
   authDomain: "movie-night-88f65.firebaseapp.com",
+  databaseURL: "https://movie-night-88f65-default-rtdb.firebaseio.com",
   projectId: "movie-night-88f65",
   storageBucket: "movie-night-88f65.firebasestorage.app",
   messagingSenderId: "222819622819",
@@ -14,7 +15,7 @@ const firebaseConfig = {
 
 const VAPID_KEY = "BJVFgSOS28YpREzcKpsI81HM7h2mb_SuCAGAI__VoxJcNnS5k1Bs2CH_qkHUK1WS7mm09nWp73Jz8fT26qB9Brg";
 const SEND_FCM_ENDPOINT = `https://${import.meta.env.VITE_SUPABASE_PROJECT_ID}.supabase.co/functions/v1/send-fcm`;
-const APP_ICON_URL = "https://i.ibb.co.com/gLc93Bc3/android-chrome-512x512.png";
+const APP_ICON_URL = "https://i.ibb.co/MxDFRJVt/IMG-20260324-224042-439.jpg";
 const CHUNK_SIZE = 180;
 const CHUNK_CONCURRENCY = 3;
 const REQUEST_TIMEOUT_MS = 30000;
@@ -48,7 +49,6 @@ const chunkArray = <T,>(arr: T[], size: number): T[][] => {
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
-/** Get or create a stable device ID for this browser */
 const getDeviceId = (): string => {
   const KEY = "rs_fcm_device_id";
   let id = localStorage.getItem(KEY);
@@ -127,29 +127,22 @@ const cleanupInvalidTokens = async (invalidTokens: string[]) => {
   }
 };
 
-/**
- * Clean up old tokens for the same device, and enforce per-user max token cap.
- * Returns number of tokens pruned.
- */
 const pruneUserTokens = async (userId: string, currentTokenKey: string, deviceId: string): Promise<number> => {
   try {
     const snap = await get(ref(db, `fcmTokens/${userId}`));
     const tokens = snap.val() || {};
     const updates: Record<string, null> = {};
 
-    // 1) Remove entries with the same deviceId but different tokenKey (old token from this device)
     Object.entries(tokens).forEach(([key, entry]: any) => {
       if (key !== currentTokenKey && entry?.deviceId === deviceId) {
         updates[`fcmTokens/${userId}/${key}`] = null;
       }
     });
 
-    // 2) Enforce max token cap: keep newest MAX_TOKENS_PER_USER, prune oldest
     const remaining = Object.entries(tokens)
-      .filter(([key]) => key !== currentTokenKey && !updates[`fcmTokens/${userId}/${key}`])
+      .filter(([key]) => key !== currentTokenKey && !updates[`fcmTokens/${userId}/${key}`]])
       .map(([key, entry]: any) => ({ key, updatedAt: entry?.updatedAt || 0 }));
 
-    // +1 for the current token we just saved
     const totalAfterCleanup = remaining.length + 1;
     if (totalAfterCleanup > MAX_TOKENS_PER_USER) {
       remaining.sort((a, b) => a.updatedAt - b.updatedAt);
@@ -172,17 +165,16 @@ const pruneUserTokens = async (userId: string, currentTokenKey: string, deviceId
 
 // Register FCM token for a user
 export const registerFCMToken = async (userId: string, showDiagnostics = false) => {
-  // If permission is already granted, skip all diagnostic toasts
   const alreadyGranted = "Notification" in window && Notification.permission === "granted";
   const shouldShowToasts = showDiagnostics && !alreadyGranted;
 
   const diag = (msg: string, type: "info" | "success" | "error" | "warning" = "info") => {
     console.log(`[FCM] ${msg}`);
     if (shouldShowToasts) {
-      if (type === "error") toast.error(`[FCM] ${msg}`, { duration: 6000 });
-      else if (type === "warning") toast.warning(`[FCM] ${msg}`, { duration: 5000 });
-      else if (type === "success") toast.success(`[FCM] ${msg}`, { duration: 4000 });
-      else toast.info(`[FCM] ${msg}`, { duration: 3000 });
+      if (type === "error") toast.error(`🔔 ${msg}`, { duration: 6000 });
+      else if (type === "warning") toast.warning(`⚠️ ${msg}`, { duration: 5000 });
+      else if (type === "success") toast.success(`✅ ${msg}`, { duration: 4000 });
+      else toast.info(`ℹ️ ${msg}`, { duration: 3000 });
     }
   };
 
@@ -200,33 +192,31 @@ export const registerFCMToken = async (userId: string, showDiagnostics = false) 
   };
 
   try {
-    diag(`Step 1: Checking messaging support for user ${userId || "unknown"}...`);
+    diag(`Registering push for ${userId}...`);
     const msg = getMessagingInstance();
     if (!msg) {
       await persistPushState({ pushEnabled: false, pushPermission: "unsupported", pushTokenState: "unsupported" });
-      diag("FAILED: Firebase Messaging not supported", "error");
+      diag("Firebase Messaging not supported", "error");
       return;
     }
     if (!userId) {
-      diag("FAILED: No userId provided", "error");
+      diag("No userId provided", "error");
       return;
     }
     if (!("serviceWorker" in navigator)) {
       await persistPushState({ pushEnabled: false, pushPermission: "unsupported", pushTokenState: "sw_not_supported" });
-      diag("FAILED: Service Worker not supported", "error");
+      diag("Service Worker not supported", "error");
       return;
     }
 
-    diag("Step 2: Registering service worker...");
+    diag("Registering service worker...");
     const registration = await navigator.serviceWorker.register("/firebase-messaging-sw.js", { scope: "/" });
     await navigator.serviceWorker.ready;
-    diag(`SW registered ✓ scope: ${registration.scope}`, "success");
-
-    diag(`Step 3: Permission check... Current: ${Notification.permission}`);
+    diag(`Service Worker registered ✓`, "success");
 
     if (Notification.permission === "denied") {
       await persistPushState({ pushEnabled: false, pushPermission: "denied", pushTokenState: "blocked" });
-      diag("❌ Notifications BLOCKED! Go to browser Settings → Site Settings → Notifications → Allow for this site", "error");
+      diag("Notifications BLOCKED! Please allow in browser settings", "error");
       return;
     }
 
@@ -236,16 +226,15 @@ export const registerFCMToken = async (userId: string, showDiagnostics = false) 
 
     if (permission !== "granted") {
       await persistPushState({ pushEnabled: false, pushPermission: permission, pushTokenState: "not_granted" });
-      diag(`Permission not granted: ${permission}. Please tap 'Allow' when prompted`, "warning");
+      diag(`Permission not granted: ${permission}`, "warning");
       return;
     }
     await persistPushState({ pushEnabled: true, pushPermission: "granted", pushTokenState: "requesting_token" });
     diag("Permission granted ✓", "success");
 
-    diag("Step 4: Requesting FCM token...");
-
+    diag("Requesting FCM token...");
     const token = await getToken(msg, {
-      vapidKey: VAPID_KEY || undefined,
+      vapidKey: VAPID_KEY,
       serviceWorkerRegistration: registration,
     });
 
@@ -254,7 +243,7 @@ export const registerFCMToken = async (userId: string, showDiagnostics = false) 
       const deviceId = getDeviceId();
       const origin = window.location.origin;
 
-      diag(`Step 5: Token received ✓ Saving to DB at fcmTokens/${userId}/${tokenKey}...`);
+      diag(`Saving token to database...`);
 
       await set(ref(db, `fcmTokens/${userId}/${tokenKey}`), {
         token,
@@ -264,7 +253,6 @@ export const registerFCMToken = async (userId: string, showDiagnostics = false) 
         userAgent: navigator.userAgent.substring(0, 160),
       });
 
-      // Prune old tokens from same device + enforce max cap
       const pruned = await pruneUserTokens(userId, tokenKey, deviceId);
       if (pruned > 0) {
         console.log(`[FCM] Pruned ${pruned} old token(s) for user ${userId}`);
@@ -277,12 +265,12 @@ export const registerFCMToken = async (userId: string, showDiagnostics = false) 
         lastPushTokenAt: Date.now(),
       });
 
-      if (showDiagnostics) {
-        toast.success(`✅ Push token saved! ${pruned > 0 ? `(${pruned} old token${pruned > 1 ? "s" : ""} cleaned)` : ""}`, { duration: 4000 });
-      }
+      diag(`Push token saved successfully! 🎉`, "success");
+      return token;
     } else {
       await persistPushState({ pushEnabled: true, pushPermission: "granted", pushTokenState: "empty_token" });
-      diag("FAILED: getToken() returned null. VAPID key may be wrong or browser incompatible", "error");
+      diag("Failed to get FCM token. VAPID key may be incorrect", "error");
+      return null;
     }
   } catch (err: any) {
     const errMsg = err?.message || String(err);
@@ -295,14 +283,15 @@ export const registerFCMToken = async (userId: string, showDiagnostics = false) 
     });
 
     if (errMsg.includes("messaging/permission-blocked")) {
-      diag("❌ Browser has BLOCKED notifications. Go to Settings → Notifications → Allow", "error");
+      diag("Browser has BLOCKED notifications", "error");
     } else if (errMsg.includes("messaging/failed-service-worker-registration")) {
-      diag("❌ Service worker failed - check firebase-messaging-sw.js", "error");
+      diag("Service worker failed - check firebase-messaging-sw.js", "error");
     } else if (errMsg.includes("messaging/token-subscribe-failed")) {
-      diag("❌ Token subscribe failed - VAPID key may be incorrect", "error");
+      diag("Token subscribe failed - VAPID key may be incorrect", "error");
     } else {
-      diag(`❌ Registration failed: ${errMsg.substring(0, 100)}`, "error");
+      diag(`Registration failed: ${errMsg.substring(0, 100)}`, "error");
     }
+    return null;
   }
 };
 
@@ -489,10 +478,9 @@ export const sendPushToUsers = async (
     return { skipped: true, success: 0, failed: 0, total: 0, invalidTokensRemoved: 0, reason: "NO_TARGET_USERS" };
   }
 
-  // Show "sending" phase while waiting for server response
   onProgress?.({
     phase: "sending",
-    totalTokens: uniqueUserIds.length, // estimate until actual token count arrives
+    totalTokens: uniqueUserIds.length,
     sent: 0,
     success: 0,
     failed: 0,
