@@ -5,6 +5,7 @@ import { getAuth, signInWithEmailAndPassword, signOut, GoogleAuthProvider, signI
 const firebaseConfig = {
   apiKey: "AIzaSyC0KtwNcRcGYplQloSUh1nVCJKdEqJ5dj8",
   authDomain: "movie-night-88f65.firebaseapp.com",
+  databaseURL: "https://movie-night-88f65-default-rtdb.firebaseio.com", // ✅ Added databaseURL
   projectId: "movie-night-88f65",
   storageBucket: "movie-night-88f65.firebasestorage.app",
   messagingSenderId: "222819622819",
