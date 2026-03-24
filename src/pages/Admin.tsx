@@ -1077,7 +1077,7 @@ const Admin = () => {
           <div className="text-center mb-8">
             <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-purple-800 rounded-2xl flex items-center justify-center text-3xl font-black mx-auto mb-4 shadow-[0_5px_30px_rgba(157,78,221,0.5)]">Kꫝᴋᴜᴢᴜ</div>
             <h1 className="text-xl font-bold text-white">Admin Login</h1>
-            <p className="text-sm text-[#957DAD] mt-1">ZxㅤKꫝᴋᴜᴢᴜㅤメ Control Panel</p>
+            <p className="text-sm text-[#957DAD] mt-1">ZK Control Panel</p>
           </div>
           <div className="space-y-4">
             <input value={loginEmail} onChange={e => setLoginEmail(e.target.value)} className={inputClass} placeholder="Email" type="email" />
@@ -1222,10 +1222,10 @@ const Admin = () => {
       <div className={`fixed top-0 ${sidebarOpen ? "left-0" : "-left-[280px]"} w-[280px] h-screen bg-gradient-to-b from-[#151521] to-[#0F0F1A] z-[1000] transition-all duration-300 border-r border-purple-500/20 flex flex-col`}>
         <div className="p-5 border-b border-purple-500/20">
           <div className="flex items-center gap-3">
-            <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-purple-800 rounded-[14px] flex items-center justify-center text-2xl font-black shadow-[0_5px_20px_rgba(157,78,221,0.4)]">ZxㅤKꫝᴋᴜᴢᴜㅤメ</div>
+            <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-purple-800 rounded-[14px] flex items-center justify-center text-2xl font-black shadow-[0_5px_20px_rgba(157,78,221,0.4)]">ZK</div>
             <div>
-              <h2 className="text-lg font-bold"><span className="bg-gradient-to-r from-purple-500 to-pink-500 bg-clip-text text-transparent">ZxㅤKꫝᴋᴜᴢᴜㅤメ</span> Admin</h2>
-              <p className="text-[11px] text-[#D1C4E9]">ZxㅤKꫝᴋᴜᴢᴜㅤメ Control Panel</p>
+              <h2 className="text-lg font-bold"><span className="bg-gradient-to-r from-purple-500 to-pink-500 bg-clip-text text-transparent">ZK</span> Admin</h2>
+              <p className="text-[11px] text-[#D1C4E9]">ZK Control Panel</p>
             </div>
           </div>
         </div>
@@ -1263,13 +1263,13 @@ const Admin = () => {
           <button onClick={() => setSidebarOpen(true)} className="w-10 h-10 rounded-[10px] bg-white/10 flex items-center justify-center hover:bg-purple-500 transition-all">
             <Menu size={18} />
           </button>
-          <span className="text-2xl font-black text-purple-500" style={{ textShadow: "0 0 20px rgba(157,78,221,0.4)" }}>ZxㅤKꫝᴋᴜᴢᴜㅤメ</span>
+          <span className="text-2xl font-black text-purple-500" style={{ textShadow: "0 0 20px rgba(157,78,221,0.4)" }}>ZK</span>
           <h1 className="text-base font-semibold">{sectionTitles[activeSection]}</h1>
         </div>
         <div className="flex items-center gap-2.5 relative">
           <div className="bg-gradient-to-r from-purple-500 to-purple-800 px-3 py-1.5 rounded-full text-[11px] font-semibold flex items-center gap-1.5">
             <Shield size={12} />
-            <span className="bg-gradient-to-r from-purple-300 to-pink-300 bg-clip-text text-transparent font-extrabold">ZxㅤKꫝᴋᴜᴢᴜㅤメ</span>
+            <span className="bg-gradient-to-r from-purple-300 to-pink-300 bg-clip-text text-transparent font-extrabold">ZK</span>
           </div>
           <button onClick={() => setDropdownOpen(!dropdownOpen)} className="w-10 h-10 rounded-[10px] bg-white/10 flex items-center justify-center hover:bg-purple-500 transition-all">
             <MoreVertical size={16} />
