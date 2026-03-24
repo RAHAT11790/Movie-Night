@@ -24,7 +24,6 @@ type ServiceAccount = {
   client_email: string;
   private_key: string;
   project_id: string;
-  database_url?: string;
 };
 
 function base64UrlEncode(input: string | Uint8Array): string {
@@ -39,10 +38,7 @@ async function getAccessToken(serviceAccount: ServiceAccount): Promise<string> {
   const header = base64UrlEncode(JSON.stringify({ alg: "RS256", typ: "JWT" }));
   const payload = base64UrlEncode(JSON.stringify({
     iss: serviceAccount.client_email,
-    scope: [
-      "https://www.googleapis.com/auth/firebase.messaging",
-      "https://www.googleapis.com/auth/firebase.database",
-    ].join(" "),
+    scope: "https://www.googleapis.com/auth/firebase.messaging",
     aud: "https://oauth2.googleapis.com/token",
     iat: now,
     exp: now + 3600,
@@ -82,6 +78,30 @@ async function getAccessToken(serviceAccount: ServiceAccount): Promise<string> {
   return tokenData.access_token;
 }
 
+// Fetch tokens from Firebase Realtime Database
+async function fetchTokensFromRTDB(userIds: string[]): Promise<string[]> {
+  const dbUrl = "https://movie-night-88f65-default-rtdb.firebaseio.com";
+  const tokens: string[] = [];
+
+  for (const userId of userIds) {
+    try {
+      const response = await fetch(`${dbUrl}/fcmTokens/${userId}.json`);
+      if (response.ok) {
+        const data = await response.json();
+        if (data) {
+          Object.values(data).forEach((entry: any) => {
+            if (entry?.token) tokens.push(entry.token);
+          });
+        }
+      }
+    } catch (err) {
+      console.error(`Failed to fetch tokens for ${userId}:`, err);
+    }
+  }
+
+  return [...new Set(tokens)];
+}
+
 const BRAND_ICON_URL = "https://i.ibb.co/MxDFRJVt/IMG-20260324-224042-439.jpg";
 
 serve(async (req) => {
@@ -92,7 +112,7 @@ serve(async (req) => {
   try {
     const { tokens, userIds, title, body, image, data } = await req.json();
 
-    console.log("Received request:", { tokens: tokens?.length, userIds, title, body });
+    console.log("📨 Received request:", { tokens: tokens?.length, userIds: userIds?.length, title });
 
     const inputTokens = Array.isArray(tokens) ? tokens.filter(Boolean) : [];
     const inputUserIds = Array.isArray(userIds) ? userIds.filter(Boolean) : [];
@@ -108,18 +128,24 @@ serve(async (req) => {
     const accessToken = await getAccessToken(serviceAccount);
     const projectId = serviceAccount.project_id;
 
-    console.log("Access token obtained, project:", projectId);
+    console.log("🔑 Access token obtained for project:", projectId);
 
     let resolvedTokens = [...new Set(inputTokens)];
 
+    // Fetch tokens from RTDB if userIds provided
     if (resolvedTokens.length === 0 && inputUserIds.length > 0) {
-      // Simplified: Just return success for testing
+      console.log("🔍 Fetching tokens from RTDB for users:", inputUserIds);
+      resolvedTokens = await fetchTokensFromRTDB(inputUserIds);
+      console.log(`✅ Found ${resolvedTokens.length} tokens for ${inputUserIds.length} users`);
+    }
+
+    if (resolvedTokens.length === 0) {
       return new Response(JSON.stringify({
         success: 0,
         failed: 0,
         totalTokens: 0,
-        message: "Test mode - tokens would be fetched from RTDB",
-        note: "Make sure fcmTokens exist in Firebase Realtime Database at /fcmTokens/{userId}/{tokenKey}/token"
+        reason: "NO_TOKENS_FOUND",
+        message: "No push tokens found for the specified users"
       }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
@@ -128,6 +154,7 @@ serve(async (req) => {
     // Send notifications
     let successCount = 0;
     let failCount = 0;
+    const invalidTokens: string[] = [];
 
     for (const token of resolvedTokens) {
       try {
@@ -135,25 +162,34 @@ serve(async (req) => {
           message: {
             token,
             notification: {
-              title: title || "Test Notification",
-              body: body || "This is a test notification",
+              title: title || "Movie Night",
+              body: body || "New notification",
             },
             webpush: {
               headers: {
                 Urgency: "high",
+                TTL: "2419200",
               },
               notification: {
-                title: title || "Test Notification",
-                body: body || "This is a test notification",
-                icon: BRAND_ICON_URL,
+                title: title || "Movie Night",
+                body: body || "New notification",
+                icon: image || BRAND_ICON_URL,
                 badge: BRAND_ICON_URL,
+                vibrate: [200, 100, 200],
+              },
+              fcm_options: {
+                link: data?.url || "/",
               },
             },
-            data: data || {},
+            data: {
+              ...data,
+              title: title || "Movie Night",
+              body: body || "New notification",
+              icon: image || BRAND_ICON_URL,
+              timestamp: String(Date.now()),
+            },
           },
         };
-
-        console.log("Sending to token:", token.substring(0, 20) + "...");
 
         const response = await fetch(`https://fcm.googleapis.com/v1/projects/${projectId}/messages:send`, {
           method: "POST",
@@ -166,14 +202,19 @@ serve(async (req) => {
 
         if (response.ok) {
           successCount++;
-          console.log("✅ Notification sent successfully to:", token.substring(0, 20) + "...");
+          console.log(`✅ Sent to: ${token.substring(0, 20)}...`);
         } else {
           const errorText = await response.text();
-          console.error("❌ Failed to send to", token.substring(0, 20) + "...:", errorText);
+          console.error(`❌ Failed to send to ${token.substring(0, 20)}...:`, errorText);
           failCount++;
+          
+          // Check if token is invalid
+          if (errorText.includes("UNREGISTERED") || errorText.includes("NOT_REGISTERED")) {
+            invalidTokens.push(token);
+          }
         }
       } catch (err) {
-        console.error("❌ Error sending to token:", err);
+        console.error(`❌ Error sending to ${token.substring(0, 20)}...:`, err);
         failCount++;
       }
     }
@@ -182,12 +223,13 @@ serve(async (req) => {
       success: successCount,
       failed: failCount,
       totalTokens: resolvedTokens.length,
+      invalidTokens: invalidTokens,
       message: `Sent ${successCount} notifications, failed ${failCount}`,
     }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (err: any) {
-    console.error("Fatal error:", err);
+    console.error("💥 Fatal error:", err);
     return new Response(JSON.stringify({ error: err.message }), {
       status: 500,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
