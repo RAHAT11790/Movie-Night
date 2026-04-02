@@ -2865,7 +2865,7 @@ Pᴏᴡᴇʀ Bʏ :
       <div className="min-h-screen bg-[#0D0D1A] flex items-center justify-center p-4">
         <div className={`${glassCard} p-8 w-full max-w-[400px]`}>
           <div className="text-center mb-8">
-            <div className="w-14 h-14 bg-indigo-600 rounded-2xl flex items-center justify-center text-2xl font-black mx-auto mb-4">RS</div>
+            <div className="w-14 h-14 bg-indigo-600 rounded-2xl flex items-center justify-center text-2xl font-black mx-auto mb-4">MN</div>
             <h1 className="text-xl font-bold text-white">Create Admin PIN</h1>
             <p className="text-sm text-zinc-400 mt-1">Set up your admin PIN</p>
           </div>
@@ -3082,7 +3082,7 @@ Pᴏᴡᴇʀ Bʏ :
           <button onClick={() => setSidebarOpen(true)} className="w-9 h-9 rounded-lg bg-white/5 flex items-center justify-center hover:bg-indigo-500/20 transition-colors">
             <Menu size={18} />
           </button>
-          <span className="text-xl font-black text-indigo-500">RS</span>
+          <span className="text-xl font-black text-indigo-500">MN</span>
           <h1 className="text-sm font-semibold text-zinc-200">{sectionTitles[activeSection]}</h1>
         </div>
         <div className="flex items-center gap-2 relative">
@@ -5813,7 +5813,7 @@ const AdminLiveSupportSection = ({
         role: "admin",
         content: replyText.trim(),
         timestamp: Date.now(),
-        userName: "Admin (RS)",
+        userName: "Admin (MN)",
       });
       await update(ref(db, `supportChats/${selectedChat}/meta`), {
         lastMessage: `Admin: ${replyText.trim()}`,
@@ -5980,7 +5980,7 @@ const AdminCommentsSection = ({
       const replyRef = push(ref(db, `comments/${animeId}/${commentId}/replies`));
       await set(replyRef, {
         userId: "admin",
-        userName: "Admin (RS)",
+        userName: "Admin (MN)",
         text,
         timestamp: now,
       });
@@ -7545,7 +7545,7 @@ const AnimeSaltManagerSection = ({
             <span className={`inline-block h-5 w-5 transform rounded-full bg-white shadow transition-transform ${animeSaltGlobalEnabled ? 'translate-x-6' : 'translate-x-1'}`} />
           </button>
         </div>
-        <p className="text-[10px] text-zinc-400 mt-2">বন্ধ করলে সাইটে AnimeSalt-এর সকল কন্টেন্ট হাইড হয়ে যাবে। শুধু RS কন্টেন্ট দেখাবে।</p>
+        <p className="text-[10px] text-zinc-400 mt-2">বন্ধ করলে সাইটে AnimeSalt-এর সকল কন্টেন্ট হাইড হয়ে যাবে। শুধু MN কন্টেন্ট দেখাবে।</p>
       </div>
 
       <div className={`${glassCard} p-4 mb-4`}>
@@ -8724,7 +8724,7 @@ const EpisodeNameRefreshSection = ({
         <List size={14} className="text-amber-400" /> এপিসোড নাম রিফ্রেশ (TMDB)
       </h3>
       <p className="text-[11px] text-zinc-400 mb-3">
-        RS ওয়েবসিরিজের এপিসোডের নাম TMDB থেকে আপডেট করবে। শুধু খালি বা জেনেরিক নাম আপডেট হবে।
+        MN ওয়েবসিরিজের এপিসোডের নাম TMDB থেকে আপডেট করবে। শুধু খালি বা জেনেরিক নাম আপডেট হবে।
       </p>
 
       {!refreshing && !done && (
@@ -9196,7 +9196,7 @@ const LinkCheckerSection = ({
   return (
     <div className={`${glassCard} p-4 mb-4`}>
       <h3 className="text-sm font-semibold mb-3.5 flex items-center gap-2">
-        <Link size={14} className="text-red-400" /> লিংক চেকার (RS)
+        <Link size={14} className="text-red-400" /> লিংক চেকার (MN)
       </h3>
       <p className="text-[11px] text-zinc-400 mb-3">
         ইউজার প্লেয়ারের মতো CDN/Direct/Proxy রুটে ভিডিও চালিয়ে রিয়েল প্লেব্যাক টেস্ট করবে। যেগুলো কোনো রুটেই প্লে হবে না সেগুলোই ব্রোকেন দেখাবে।
