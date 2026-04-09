@@ -7,7 +7,7 @@
 // --- Branding ---
 export const SITE_NAME = import.meta.env.VITE_SITE_NAME || "MOVIE NIGHT";
 export const SITE_DESCRIPTION = import.meta.env.VITE_SITE_DESCRIPTION || "Your ultimate destination for watching anime series and movies.";
-export const SITE_URL = import.meta.env.VITE_SITE_URL || "https://movienight-dun.vercel.app/";
+export const SITE_URL = import.meta.env.VITE_SITE_URL || "https://movienight-dun.vercel.app";
 export const SITE_ICON_URL = import.meta.env.VITE_SITE_ICON_URL || "https://i.ibb.co/pjHZHQXv/20260401-202949.png";
 
 // --- Telegram ---
