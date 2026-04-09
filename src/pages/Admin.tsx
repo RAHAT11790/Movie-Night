@@ -501,20 +501,20 @@ const BrandingSection = ({ glassCard, inputClass, btnPrimary }: { glassCard: str
   const [saving, setSaving] = useState(false);
 
   const FIELDS = [
-    { key: "siteName", label: "সাইটের নাম", placeholder: "RS ANIME" },
+    { key: "siteName", label: "সাইটের নাম", placeholder: "MOVIE NIGHT" },
     { key: "siteDescription", label: "সাইটের বিবরণ", placeholder: "Your ultimate destination..." },
     { key: "siteTagline", label: "ট্যাগলাইন", placeholder: "Premium Anime Streaming" },
-    { key: "loginTitle", label: "লগইন পেজের টাইটেল", placeholder: "RS ANIME" },
+    { key: "loginTitle", label: "লগইন পেজের টাইটেল", placeholder: "MOVIE NIGHT" },
     { key: "loginSubtitle", label: "লগইন সাবটাইটেল", placeholder: "Premium Anime Streaming" },
-    { key: "premiumTitle", label: "প্রিমিয়াম টাইটেল", placeholder: "RS ANIME Premium" },
+    { key: "premiumTitle", label: "প্রিমিয়াম টাইটেল", placeholder: "MOVIE NIGHT Premium" },
     { key: "footerText", label: "ফুটার টেক্সট", placeholder: "Unlimited Anime Series & Movies" },
-    { key: "footerCopyright", label: "কপিরাইট টেক্সট", placeholder: "© 2026 RS ANIME..." },
-    { key: "splashText", label: "স্প্ল্যাশ স্ক্রিন টেক্সট", placeholder: "RS ANIME" },
-    { key: "adminTitle", label: "অ্যাডমিন প্যানেল টাইটেল", placeholder: "RS ANIME Admin" },
-    { key: "aboutTitle", label: "About পেজ টাইটেল", placeholder: "About RS ANIME" },
-    { key: "playerName", label: "ভিডিও প্লেয়ার টাইটেল", placeholder: "RS ANIME PLAYER" },
-    { key: "rsCardLabel", label: "RS কার্ড লেবেল", placeholder: "RS" },
-    { key: "anCardLabel", label: "AnimeSalt কার্ড লেবেল", placeholder: "AN" },
+    { key: "footerCopyright", label: "কপিরাইট টেক্সট", placeholder: "© 2026 MOVIE NIGHT..." },
+    { key: "splashText", label: "স্প্ল্যাশ স্ক্রিন টেক্সট", placeholder: "MOVIE NIGHT" },
+    { key: "adminTitle", label: "অ্যাডমিন প্যানেল টাইটেল", placeholder: "MOVIE NIGHT Admin" },
+    { key: "aboutTitle", label: "About পেজ টাইটেল", placeholder: "About MOVIE NIGHT" },
+    { key: "playerName", label: "ভিডিও প্লেয়ার টাইটেল", placeholder: "MOVIE NIGHT PLAYER" },
+    { key: "rsCardLabel", label: "MN কার্ড লেবেল", placeholder: "MN" },
+    { key: "anCardLabel", label: "AnimeSalt কার্ড লেবেল", placeholder: "MN" },
   ];
 
   const LOGO_FIELDS = [
@@ -4399,7 +4399,7 @@ Pᴏᴡᴇʀ Bʏ :
                 </div>
                 <button onClick={() => {
                   const days = parseInt(newCodeDays) || 30;
-                  const code = "RS-" + Math.random().toString(36).substring(2, 8).toUpperCase() + "-" + Math.random().toString(36).substring(2, 6).toUpperCase();
+                  const code = "MN-" + Math.random().toString(36).substring(2, 8).toUpperCase() + "-" + Math.random().toString(36).substring(2, 6).toUpperCase();
                   const codeData = {
                     code,
                     days,
@@ -8390,7 +8390,7 @@ const ProxyServerSelector = ({ glassCard }: { glassCard: string }) => {
             type="text"
             value={newProxyUrl}
             onChange={e => setNewProxyUrl(e.target.value)}
-            placeholder="প্রক্সি URL (যেমন: https://xxx.supabase.co/functions/v1/rs-video-proxy?url=)"
+            placeholder="প্রক্সি URL (যেমন: https://xxx.supabase.co/functions/v1/MN-video-proxy?url=)"
             className="w-full text-xs bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2 text-white placeholder-zinc-500 focus:border-cyan-500 outline-none"
           />
           <input
@@ -8446,7 +8446,7 @@ const ImageRefreshSection = ({
   const [errors, setErrors] = useState<string[]>([]);
   const [successCount, setSuccessCount] = useState(0);
   const [done, setDone] = useState(false);
-  const [mode, setMode] = useState<"rs" | "animesalt" | "all">("animesalt");
+  const [mode, setMode] = useState<"MN" | "animesalt" | "all">("animesalt");
   const [animesaltData, setAnimesaltData] = useState<Record<string, any>>({});
 
   useEffect(() => {
@@ -8467,9 +8467,9 @@ const ImageRefreshSection = ({
 
     const allContent: { title: string; fbPath: string; searchType: string; source: string }[] = [];
 
-    if (mode === "rs" || mode === "all") {
-      webseriesData.forEach(w => allContent.push({ title: w.title, fbPath: `webseries/${w.id}`, searchType: "tv", source: "RS" }));
-      moviesData.forEach(m => allContent.push({ title: m.title, fbPath: `movies/${m.id}`, searchType: "movie", source: "RS" }));
+    if (mode === "MN" || mode === "all") {
+      webseriesData.forEach(w => allContent.push({ title: w.title, fbPath: `webseries/${w.id}`, searchType: "tv", source: "MN" }));
+      moviesData.forEach(m => allContent.push({ title: m.title, fbPath: `movies/${m.id}`, searchType: "movie", source: "MN" }));
     }
 
     if (mode === "animesalt" || mode === "all") {
@@ -8530,7 +8530,7 @@ const ImageRefreshSection = ({
   };
 
   const pct = progress.total > 0 ? Math.round((progress.current / progress.total) * 100) : 0;
-  const totalCount = mode === "rs" ? rsCount : mode === "animesalt" ? asCount : rsCount + asCount;
+  const totalCount = mode === "MN" ? rsCount : mode === "animesalt" ? asCount : rsCount + asCount;
 
   return (
     <div className={`${glassCard} p-4 mb-4`}>
@@ -8544,10 +8544,10 @@ const ImageRefreshSection = ({
       {!refreshing && !done && (
         <div className="space-y-3">
           <div className="flex gap-2">
-            {(["animesalt", "rs", "all"] as const).map(m => (
+            {(["animesalt", "MN", "all"] as const).map(m => (
               <button key={m} onClick={() => setMode(m)}
                 className={`flex-1 py-2 text-xs font-semibold rounded-lg border transition-colors ${mode === m ? "bg-indigo-600 border-indigo-500 text-white" : "bg-[#141422] border-white/8 text-zinc-400 hover:text-white"}`}>
-                {m === "animesalt" ? `P2 (${asCount})` : m === "rs" ? `RS (${rsCount})` : `সব (${rsCount + asCount})`}
+                {m === "animesalt" ? `P2 (${asCount})` : m === "MN" ? `MN (${rsCount})` : `সব (${rsCount + asCount})`}
               </button>
             ))}
           </div>
@@ -8596,7 +8596,7 @@ const ImageRefreshSection = ({
   );
 };
 
-// Episode Name Refresh Section - fetch episode names from TMDB (RS only)
+// Episode Name Refresh Section - fetch episode names from TMDB (MN only)
 const EpisodeNameRefreshSection = ({
   glassCard, btnPrimary, webseriesData,
 }: {
